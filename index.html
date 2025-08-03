@@ -1,0 +1,1858 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EduNotes - Smart Lecture Notes</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #6c5ce7;
+            --secondary: #a29bfe;
+            --accent: #fd79a8;
+            --dark: #2d3436;
+            --light: #f5f6fa;
+            --success: #00b894;
+            --error: #d63031;
+            --warning: #fdcb6e;
+            --text: #2d3436;
+            --text-secondary: #636e72;
+            --bg: #f5f6fa;
+            --card-bg: #ffffff;
+            --border: #dfe6e9;
+        }
+
+        .dark-mode {
+            --primary: #a29bfe;
+            --secondary: #6c5ce7;
+            --accent: #fd79a8;
+            --dark: #f5f6fa;
+            --light: #2d3436;
+            --success: #00b894;
+            --error: #ff7675;
+            --warning: #ffeaa7;
+            --text: #f5f6fa;
+            --text-secondary: #b2bec3;
+            --bg: #121212;
+            --card-bg: #1e1e1e;
+            --border: #636e72;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        body {
+            background: var(--bg);
+            min-height: 100vh;
+            color: var(--text);
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Background Animation Elements */
+        .bg-element {
+            position: fixed;
+            opacity: 0.1;
+            z-index: -1;
+            animation: float 15s infinite linear;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(0) rotate(0deg);
+            }
+            50% {
+                transform: translateY(-20px) rotate(180deg);
+            }
+            100% {
+                transform: translateY(0) rotate(360deg);
+            }
+        }
+
+        .notebook-bg {
+            top: 10%;
+            left: 5%;
+            font-size: 3rem;
+            animation-delay: 0s;
+        }
+
+        .pen-bg {
+            top: 70%;
+            left: 85%;
+            font-size: 2.5rem;
+            animation-delay: 2s;
+        }
+
+        .book-bg {
+            top: 30%;
+            left: 90%;
+            font-size: 4rem;
+            animation-delay: 4s;
+        }
+
+        .pencil-bg {
+            top: 80%;
+            left: 10%;
+            font-size: 3rem;
+            animation-delay: 6s;
+        }
+
+        .ruler-bg {
+            top: 20%;
+            left: 80%;
+            font-size: 3.5rem;
+            animation-delay: 8s;
+        }
+
+        .microphone-bg {
+            top: 60%;
+            left: 15%;
+            font-size: 2rem;
+            animation-delay: 10s;
+        }
+
+        /* Intro Animation */
+        .intro-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--bg);
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            transition: opacity 1s ease-out;
+        }
+
+        .notebook-animation {
+            width: 300px;
+            height: 400px;
+            position: relative;
+            perspective: 1000px;
+        }
+
+        .notebook-page {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background-color: white;
+            border: 1px solid var(--border);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+            transform-style: preserve-3d;
+            transform-origin: left center;
+            transition: transform 1s ease-in-out;
+        }
+
+        .notebook-page::before {
+            content: '';
+            position: absolute;
+            left: 50px;
+            top: 0;
+            bottom: 0;
+            width: 1px;
+            background-color: rgba(0, 0, 0, 0.1);
+        }
+
+        .notebook-line {
+            height: 24px;
+            margin-bottom: 4px;
+            background: linear-gradient(to right, transparent 50px, rgba(0, 0, 0, 0.1) 50px, rgba(0, 0, 0, 0.1) 52px, transparent 52px);
+        }
+
+        .final-logo {
+            position: absolute;
+            opacity: 0;
+            transform: scale(0.5);
+            transition: all 1s ease-in-out;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .final-logo i {
+            font-size: 3rem;
+            color: var(--primary);
+            margin-bottom: 10px;
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .final-logo h2 {
+            font-size: 1.5rem;
+            color: var(--primary);
+            text-align: center;
+        }
+
+        /* Header Styles */
+        header {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 1rem 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            animation: fadeInDown 0.8s ease-out;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo h1 {
+            font-size: 1.8rem;
+            font-weight: 800;
+            background: linear-gradient(to right, white, #f5f6fa);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .logo .tagline {
+            font-size: 0.9rem;
+            font-weight: 600;
+            opacity: 0.9;
+        }
+
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+
+        nav ul li a {
+            color: white;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        nav ul li a:hover {
+            color: var(--accent);
+        }
+
+        nav ul li a::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: -5px;
+            left: 0;
+            background-color: var(--accent);
+            transition: width 0.3s ease;
+        }
+
+        nav ul li a:hover::after {
+            width: 100%;
+        }
+
+        .auth-btn {
+            background-color: white;
+            color: var(--primary);
+            border: none;
+            padding: 0.6rem 1.5rem;
+            border-radius: 50px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .auth-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+            background-color: var(--accent);
+            color: white;
+        }
+
+        /* Main Content */
+        .main-content {
+            padding-top: 80px;
+            padding-bottom: 2rem;
+            min-height: calc(100vh - 120px);
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 2rem auto;
+            background: var(--card-bg);
+            padding: 2rem;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        h1 {
+            color: var(--primary);
+            text-align: center;
+            margin-bottom: 1rem;
+            font-weight: 600;
+        }
+
+        .subtitle {
+            text-align: center;
+            margin-bottom: 2rem;
+            color: var(--text-secondary);
+        }
+
+        .header-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .theme-toggle {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            cursor: pointer;
+            color: var(--text-secondary);
+            background: var(--card-bg);
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            border: 1px solid var(--border);
+        }
+
+        .theme-toggle:hover {
+            background: var(--light);
+        }
+
+        .theme-toggle i {
+            font-size: 1.2rem;
+        }
+
+        .control-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+            background: var(--card-bg);
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+
+        .language-selector {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        select {
+            padding: 0.75rem 1rem;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            font-size: 1rem;
+            flex-grow: 1;
+            transition: all 0.3s;
+            background-color: var(--card-bg);
+            color: var(--text);
+        }
+
+        select:focus {
+            border-color: var(--primary);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(108, 92, 231, 0.2);
+        }
+
+        .button-group {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        button {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        button.primary {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        button.primary:hover:not(:disabled) {
+            background-color: var(--secondary);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(108, 92, 231, 0.2);
+        }
+
+        button.primary:disabled {
+            background-color: var(--text-secondary);
+            transform: none;
+            box-shadow: none;
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+
+        button.secondary {
+            background-color: var(--card-bg);
+            color: var(--primary);
+            border: 2px solid var(--primary);
+        }
+
+        button.secondary:hover {
+            background-color: var(--light);
+        }
+
+        #statusDisplay {
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            display: none;
+            animation: fadeIn 0.3s;
+        }
+
+        #statusDisplay.success {
+            background-color: rgba(0, 184, 148, 0.2);
+            color: var(--success);
+            display: block;
+        }
+
+        #statusDisplay.error {
+            background-color: rgba(214, 48, 49, 0.2);
+            color: var(--error);
+            display: block;
+            animation: shake 0.5s;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-5px); }
+            40%, 80% { transform: translateX(5px); }
+        }
+
+        .result-section {
+            margin-top: 2rem;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            border: 1px solid var(--border);
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        .tab-header {
+            display: flex;
+            background-color: var(--light);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .tab-btn {
+            padding: 1rem 1.5rem;
+            background: none;
+            border: none;
+            font-weight: 500;
+            color: var(--text-secondary);
+            position: relative;
+            cursor: pointer;
+            flex: 1;
+            text-align: center;
+            transition: all 0.3s;
+        }
+
+        .tab-btn:hover {
+            background-color: rgba(108, 92, 231, 0.1);
+        }
+
+        .tab-btn.active {
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        .tab-btn.active::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background-color: var(--primary);
+            animation: underline 0.3s ease-out;
+        }
+
+        @keyframes underline {
+            from { transform: scaleX(0); }
+            to { transform: scaleX(1); }
+        }
+
+        .tab-content {
+            padding: 1.5rem;
+            background-color: var(--card-bg);
+            display: none;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .result-text {
+            min-height: 200px;
+            max-height: 400px;
+            overflow-y: auto;
+            padding: 1rem;
+            background-color: var(--light);
+            border-radius: 8px;
+            line-height: 1.6;
+            white-space: pre-wrap;
+            color: var(--text);
+        }
+
+        .formatted-notes {
+            line-height: 1.8;
+            white-space: pre-wrap;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .notes-heading {
+            font-weight: 600;
+            color: var(--primary);
+            margin: 1rem 0 0.5rem;
+            display: flex;
+            align-items: center;
+        }
+
+        .main-point {
+            list-style-type: none;
+            padding-left: 1.5rem;
+            margin-left: 0.5rem;
+            position: relative;
+        }
+
+        .main-point::before {
+            content: '•';
+            position: absolute;
+            left: 0;
+            color: var(--primary);
+            font-weight: bold;
+        }
+
+        .supporting-point {
+            list-style-type: none;
+            padding-left: 1.5rem;
+            margin-left: 0.5rem;
+            position: relative;
+        }
+
+        .supporting-point::before {
+            content: '-';
+            position: absolute;
+            left: 0;
+            color: var(--text-secondary);
+        }
+
+        .takeaway-point {
+            list-style-type: none;
+            padding-left: 1.5rem;
+            margin-left: 0.5rem;
+            position: relative;
+            font-weight: 500;
+        }
+
+        .takeaway-point::before {
+            content: '→';
+            position: absolute;
+            left: 0;
+            color: var(--success);
+        }
+
+        .emoji-icon {
+            margin-right: 0.5rem;
+            font-style: normal;
+        }
+
+        .pulse {
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 0.8; }
+            50% { opacity: 1; }
+            100% { opacity: 0.8; }
+        }
+
+        .loader {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(108, 92, 231, 0.3);
+            border-radius: 50%;
+            border-top-color: var(--primary);
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .action-btn {
+            padding: 0.5rem 1rem;
+            font-size: 0.9rem;
+            border-radius: 6px;
+            background-color: var(--light);
+            color: var(--primary);
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .action-btn:hover {
+            background-color: rgba(108, 92, 231, 0.2);
+        }
+
+        .voice-controls {
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px dashed var(--border);
+        }
+
+        #notesAudio {
+            width: 100%;
+            margin-top: 0.5rem;
+            border-radius: 8px;
+            background-color: var(--light);
+        }
+
+        /* About and Contact Pages */
+        .page-content {
+            padding: 2rem;
+            max-width: 1000px;
+            margin: 0 auto;
+            background: var(--card-bg);
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        .page-content h2 {
+            color: var(--primary);
+            margin-bottom: 1.5rem;
+            font-size: 2rem;
+            border-bottom: 2px solid var(--primary);
+            padding-bottom: 0.5rem;
+        }
+
+        .page-content p {
+            margin-bottom: 1rem;
+            line-height: 1.6;
+            color: var(--text);
+        }
+
+        /* How It Works Section */
+        .how-it-works {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+
+        .step {
+            background: var(--light);
+            padding: 1.5rem;
+            border-radius: 12px;
+            text-align: center;
+            transition: transform 0.3s;
+        }
+
+        .step:hover {
+            transform: translateY(-5px);
+        }
+
+        .step-number {
+            font-size: 2.5rem;
+            color: var(--primary);
+            margin-bottom: 1rem;
+        }
+
+        .step h3 {
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+
+        /* Team Grid */
+        .team-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+
+        .team-member {
+            background: var(--light);
+            padding: 1.5rem;
+            border-radius: 12px;
+            text-align: center;
+            transition: transform 0.3s;
+        }
+
+        .team-member:hover {
+            transform: translateY(-5px);
+        }
+
+        .team-member img {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-bottom: 1rem;
+            border: 3px solid var(--primary);
+        }
+
+        .team-member h3 {
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .team-member p {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .contact-form {
+            display: grid;
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .form-group label {
+            font-weight: 500;
+            color: var(--primary);
+        }
+
+        .form-group input,
+        .form-group textarea {
+            padding: 0.75rem 1rem;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            font-size: 1rem;
+            background-color: var(--card-bg);
+            color: var(--text);
+            transition: all 0.3s;
+        }
+
+        .form-group textarea {
+            min-height: 150px;
+            resize: vertical;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            border-color: var(--primary);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(108, 92, 231, 0.2);
+        }
+
+        /* Feedback Modal */
+        .feedback-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .feedback-content {
+            background-color: var(--card-bg);
+            padding: 2rem;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 500px;
+            animation: fadeIn 0.3s;
+        }
+
+        .feedback-content h3 {
+            color: var(--primary);
+            margin-bottom: 1rem;
+        }
+
+        .rating-stars {
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+            margin: 1rem 0;
+        }
+
+        .rating-stars i {
+            font-size: 2rem;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .rating-stars i.active {
+            color: var(--warning);
+        }
+
+        /* Donation Section */
+        .donation-section {
+            margin-top: 2rem;
+            padding: 1.5rem;
+            background: var(--light);
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        .donation-options {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin: 1.5rem 0;
+            flex-wrap: wrap;
+        }
+
+        .donation-option {
+            background: var(--card-bg);
+            padding: 1rem;
+            border-radius: 8px;
+            border: 2px solid var(--primary);
+            cursor: pointer;
+            transition: all 0.3s;
+            min-width: 100px;
+        }
+
+        .donation-option:hover {
+            background: var(--primary);
+            color: white;
+            transform: translateY(-3px);
+        }
+
+        .donation-option.selected {
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 4px 12px rgba(108, 92, 231, 0.3);
+        }
+
+        /* Footer */
+        footer {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 1.5rem;
+            text-align: center;
+            margin-top: 2rem;
+        }
+
+        .footer-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .social-links {
+            display: flex;
+            gap: 1.5rem;
+        }
+
+        .social-links a {
+            color: white;
+            font-size: 1.5rem;
+            transition: all 0.3s;
+        }
+
+        .social-links a:hover {
+            color: var(--accent);
+            transform: translateY(-3px);
+        }
+
+        .copyright {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        /* Floating Action Button */
+        .fab {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 60px;
+            height: 60px;
+            background-color: var(--accent);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            cursor: pointer;
+            z-index: 100;
+            transition: all 0.3s ease;
+            animation: pulse 2s infinite;
+        }
+
+        .fab:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
+        }
+
+        .feedback-fab {
+            bottom: 110px;
+            background-color: var(--warning);
+        }
+
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(253, 121, 168, 0.7);
+            }
+            70% {
+                box-shadow: 0 0 0 15px rgba(253, 121, 168, 0);
+            }
+            100% {
+                box-shadow: 0 0 0 0 rgba(253, 121, 168, 0);
+            }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            header {
+                flex-direction: column;
+                padding: 1rem;
+            }
+
+            nav ul {
+                margin: 1rem 0;
+                gap: 1rem;
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+
+            .container {
+                padding: 1.5rem;
+                margin: 1rem;
+            }
+
+            .button-group {
+                flex-direction: column;
+            }
+            
+            button {
+                width: 100%;
+            }
+            
+            .tab-btn {
+                padding: 0.75rem;
+                font-size: 0.9rem;
+            }
+
+            .page-content {
+                padding: 1.5rem;
+                margin: 1rem;
+            }
+
+            .donation-options {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Background Elements -->
+    <div class="bg-element notebook-bg">
+        <i class="fas fa-book"></i>
+    </div>
+    <div class="bg-element pen-bg">
+        <i class="fas fa-pen"></i>
+    </div>
+    <div class="bg-element book-bg">
+        <i class="fas fa-book-open"></i>
+    </div>
+    <div class="bg-element pencil-bg">
+        <i class="fas fa-pencil-alt"></i>
+    </div>
+    <div class="bg-element ruler-bg">
+        <i class="fas fa-ruler"></i>
+    </div>
+    <div class="bg-element microphone-bg">
+        <i class="fas fa-microphone"></i>
+    </div>
+
+    <!-- Intro Animation -->
+    <div class="intro-overlay" id="introOverlay">
+        <div class="notebook-animation">
+            <div class="notebook-page" id="notebookPage1">
+                <div class="notebook-line"></div>
+                <div class="notebook-line"></div>
+                <div class="notebook-line"></div>
+                <div class="notebook-line"></div>
+                <div class="notebook-line"></div>
+                <div class="notebook-line"></div>
+                <div class="notebook-line"></div>
+                <div class="notebook-line"></div>
+                <div class="notebook-line"></div>
+                <div class="notebook-line"></div>
+                <div class="notebook-line"></div>
+                <div class="notebook-line"></div>
+                <div class="notebook-line"></div>
+                <div class="notebook-line"></div>
+                <div class="notebook-line"></div>
+            </div>
+            <div class="notebook-page" id="notebookPage2">
+                <div class="notebook-line"></div>
+                <div class="notebook-line"></div>
+                <div class="notebook-line"></div>
+                <div class="notebook-line"></div>
+                <div class="notebook-line"></div>
+                <div class="notebook-line"></div>
+                <div class="notebook-line"></div>
+                <div class="notebook-line"></div>
+                <div class="notebook-line"></div>
+                <div class="notebook-line"></div>
+                <div class="notebook-line"></div>
+                <div class="notebook-line"></div>
+                <div class="notebook-line"></div>
+                <div class="notebook-line"></div>
+                <div class="notebook-line"></div>
+            </div>
+        </div>
+        <div class="final-logo" id="finalLogo">
+            <i class="fas fa-microphone-alt"></i>
+            <h2>EduNotes</h2>
+        </div>
+    </div>
+
+    <!-- Header -->
+    <header>
+        <div class="logo">
+            <h1>EduNotes</h1>
+            <span class="tagline">VOICE TO STRUCTURED NOTES</span>
+        </div>
+        <nav>
+            <ul>
+                <li><a href="#" class="nav-link" data-page="home">HOME</a></li>
+                <li><a href="#" class="nav-link" data-page="about">ABOUT US</a></li>
+                <li><a href="#" class="nav-link" data-page="contact">CONTACT</a></li>
+            </ul>
+        </nav>
+        <div class="theme-toggle" id="themeToggle">
+            <i class="fas fa-moon"></i>
+            <span>Dark Mode</span>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Home Page -->
+        <div id="home-page" class="page">
+            <div class="container">
+                <p class="subtitle">Record lectures → Get transcribed text & structured notes</p>
+                
+                <div class="control-panel">
+                    <div class="language-selector">
+                        <label for="language">Language:</label>
+                        <select id="language">
+                            <option value="ml">Malayalam</option>
+                            <option value="ta">Tamil</option>
+                            <option value="hi">Hindi</option>
+                            <option value="en" selected>English</option>
+                            <option value="te">Telugu</option>
+                            <option value="kn">Kannada</option>
+                        </select>
+                    </div>
+                    
+                    <div class="button-group">
+                        <button id="startRecord" class="primary">
+                            <span id="recordIcon"><i class="fas fa-microphone"></i></span> Start Recording
+                        </button>
+                        <button id="stopRecord" class="primary" disabled>
+                            <span id="stopIcon"><i class="fas fa-stop"></i></span> Stop
+                        </button>
+                        <button id="uploadFile" class="secondary">
+                            <span><i class="fas fa-upload"></i></span> Upload WAV
+                        </button>
+                        <input type="file" id="audioUpload" accept=".wav,audio/wav" style="display: none;">
+                    </div>
+                    
+                    <div id="statusDisplay"></div>
+                </div>
+                
+                <div class="result-section">
+                    <div class="tab-header">
+                        <button class="tab-btn active" data-tab="original">Original</button>
+                        <button class="tab-btn" data-tab="translation">English</button>
+                        <button class="tab-btn" data-tab="notes">Structured Notes</button>
+                    </div>
+                    
+                    <div id="original" class="tab-content active">
+                        <div id="originalText" class="result-text">Your transcribed text will appear here...</div>
+                        <div class="action-buttons">
+                            <button class="action-btn" id="copyOriginal"><i class="fas fa-copy"></i> Copy Text</button>
+                            <button class="action-btn" id="downloadOriginal"><i class="fas fa-download"></i> Download</button>
+                        </div>
+                    </div>
+                    
+                    <div id="translation" class="tab-content">
+                        <div id="translationText" class="result-text">Translation will appear here...</div>
+                        <div class="action-buttons">
+                            <button class="action-btn" id="copyTranslation"><i class="fas fa-copy"></i> Copy Text</button>
+                            <button class="action-btn" id="downloadTranslation"><i class="fas fa-download"></i> Download</button>
+                        </div>
+                    </div>
+                    
+                    <div id="notes" class="tab-content">
+                        <div id="shortNotes" class="result-text formatted-notes">
+                            <div class="notes-heading"><span class="emoji-icon">📚</span>Comprehensive Study Notes</div>
+                            <div class="notes-heading"><span class="emoji-icon">🔍</span>Core Concepts</div>
+                            <ul>
+                                <li class="main-point">First main point properly punctuated.</li>
+                                <li class="main-point">Second concept with correct formatting.</li>
+                            </ul>
+                            <div class="notes-heading"><span class="emoji-icon">📖</span>Supporting Details</div>
+                            <ul>
+                                <li class="supporting-point">Additional detail with proper grammar.</li>
+                            </ul>
+                            <div class="notes-heading"><span class="emoji-icon">💡</span>Key Takeaways</div>
+                            <ul>
+                                <li class="takeaway-point">Most important concept to remember.</li>
+                            </ul>
+                        </div>
+                        <div class="action-buttons">
+                            <button class="action-btn" id="copyNotes"><i class="fas fa-copy"></i> Copy Notes</button>
+                            <button class="action-btn" id="downloadNotes"><i class="fas fa-download"></i> Download</button>
+                        </div>
+                        <div class="voice-controls" id="voiceControls" style="display: none;">
+                            <button class="action-btn" id="playNotesVoice">
+                                <span><i class="fas fa-play"></i></span> Play Notes
+                            </button>
+                            <audio id="notesAudio" controls style="display: none;"></audio>
+                                                    </div>
+                    </div>
+                </div>
+
+                <!-- Donation Section -->
+                <div class="donation-section">
+                    <h3>Support Our Project</h3>
+                    <p>Help us improve EduNotes by making a donation. Your support will help us add more features and languages.</p>
+                    
+                    <div class="donation-options">
+                        <div class="donation-option" data-amount="5">$5</div>
+                        <div class="donation-option" data-amount="10">$10</div>
+                        <div class="donation-option" data-amount="20">$20</div>
+                        <div class="donation-option" data-amount="50">$50</div>
+                        <div class="donation-option" data-amount="100">$100</div>
+                    </div>
+                    
+                    <button class="primary" id="donateButton" style="margin-top: 1rem;">
+                        <i class="fas fa-heart"></i> Donate Now
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- About Page -->
+        <div id="about-page" class="page" style="display: none;">
+            <div class="page-content">
+                <h2>About EduNotes</h2>
+                <p>EduNotes is an innovative application designed to help students and professionals transform their lecture recordings into structured, easy-to-review notes. Our AI-powered system automatically transcribes, translates, and organizes your spoken content into clear, categorized notes.</p>
+                
+                <h2 style="margin-top: 2rem;">Our Mission</h2>
+                <p>We believe that learning should be accessible to everyone, regardless of language barriers or note-taking skills. Our mission is to make education more efficient by automating the tedious parts of note-taking while preserving the important content.</p>
+                
+                <h2 style="margin-top: 2rem;">How It Works</h2>
+                <div class="how-it-works">
+                    <div class="step">
+                        <div class="step-number">1</div>
+                        <h3>Record</h3>
+                        <p>Record your lecture or upload an audio file in multiple Indian languages.</p>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">2</div>
+                        <h3>Process</h3>
+                        <p>Our AI processes the audio into text and translates it if needed.</p>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">3</div>
+                        <h3>Organize</h3>
+                        <p>The content is automatically structured into clear, categorized notes.</p>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">4</div>
+                        <h3>Review</h3>
+                        <p>Study from well-formatted notes or listen to the audio version.</p>
+                    </div>
+                </div>
+                
+                <h2 style="margin-top: 2rem;">Meet The Team</h2>
+                <div class="team-grid">
+                    <div class="team-member">
+                        <img src="" alt="Team Member">
+                        <h3>Johns</h3>
+                        <p>Founder & CEO</p>
+                    </div>
+                    <div class="team-member">
+                        <img src="" alt="Team Member">
+                        <h3>Johns</h3>
+                        <p>Lead Developer</p>
+                    </div>
+                    <div class="team-member">
+                        <img src="" alt="Team Member">
+                        <h3>Dawn</h3>
+                        <p>AI Specialist</p>
+                    </div>
+                    <div class="team-member">
+                        <img src="" alt="Team Member">
+                        <h3>Johns</h3>
+                        <p>UX Designer</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Contact Page -->
+        <div id="contact-page" class="page" style="display: none;">
+            <div class="page-content">
+                <h2>Contact Us</h2>
+                <p>Have questions or feedback? We'd love to hear from you! Fill out the form below and our team will get back to you as soon as possible.</p>
+                
+                <div class="contact-form">
+                    <div class="form-group">
+                        <label for="name">Your Name</label>
+                        <input type="text" id="name" placeholder="Enter your name">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="email">Email Address</label>
+                        <input type="email" id="email" placeholder="Enter your email">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="subject">Subject</label>
+                        <input type="text" id="subject" placeholder="What's this about?">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="message">Message</label>
+                        <textarea id="message" placeholder="Type your message here..."></textarea>
+                    </div>
+                    
+                    <button class="primary" id="sendMessage" style="align-self: flex-start;">
+                        <i class="fas fa-paper-plane"></i> Send Message
+                    </button>
+                </div>
+                
+                <div id="contactSuccess" style="display: none; margin-top: 1rem; padding: 1rem; background-color: rgba(0, 184, 148, 0.2); color: var(--success); border-radius: 8px;">
+                    <i class="fas fa-check-circle"></i> Your message has been sent successfully! We'll get back to you soon.
+                </div>
+                
+                <div style="margin-top: 3rem;">
+                    <h2>Other Ways to Reach Us</h2>
+                    <p><i class="fas fa-envelope" style="margin-right: 10px;"></i> Email: support@edunotes.com</p>
+                    <p><i class="fas fa-phone" style="margin-right: 10px;"></i> Phone: +1 (555) 123-4567</p>
+                    <p><i class="fas fa-map-marker-alt" style="margin-right: 10px;"></i> Address: 123 Tech Street, Silicon Valley, CA 94025</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <div class="social-links">
+                <a href="#"><i class="fab fa-twitter"></i></a>
+                <a href="#"><i class="fab fa-facebook"></i></a>
+                <a href="#"><i class="fab fa-instagram"></i></a>
+                <a href="#"><i class="fab fa-linkedin"></i></a>
+                <a href="#"><i class="fab fa-github"></i></a>
+            </div>
+            <div class="copyright">
+                &copy; 2025 EduNotes. All rights reserved.
+            </div>
+        </div>
+    </footer>
+
+    <!-- Floating Action Buttons -->
+    <div class="fab" id="mainFab">
+        <i class="fas fa-microphone"></i>
+    </div>
+    <div class="fab feedback-fab" id="feedbackFab">
+        <i class="fas fa-comment-alt"></i>
+    </div>
+
+    <!-- Feedback Modal -->
+    <div class="feedback-modal" id="feedbackModal">
+        <div class="feedback-content">
+            <h3>Give Us Feedback</h3>
+            <p>How would you rate your experience with EduNotes?</p>
+            
+            <div class="rating-stars">
+                <i class="fas fa-star" data-rating="1"></i>
+                <i class="fas fa-star" data-rating="2"></i>
+                <i class="fas fa-star" data-rating="3"></i>
+                <i class="fas fa-star" data-rating="4"></i>
+                <i class="fas fa-star" data-rating="5"></i>
+            </div>
+            
+            <div class="form-group">
+                <label for="feedbackText">Your Feedback (optional)</label>
+                <textarea id="feedbackText" placeholder="What did you like or what can we improve?"></textarea>
+            </div>
+            
+            <button class="primary" id="submitFeedback" style="margin-top: 1rem;">
+                <i class="fas fa-paper-plane"></i> Submit Feedback
+            </button>
+            
+            <button class="secondary" id="closeFeedback" style="margin-top: 0.5rem;">
+                Close
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Theme Toggle
+        const themeToggle = document.getElementById('themeToggle');
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        let darkMode = localStorage.getItem('darkMode') === 'true' || prefersDark;
+
+        function applyTheme() {
+            if (darkMode) {
+                document.body.classList.add('dark-mode');
+                themeToggle.innerHTML = '<i class="fas fa-sun"></i><span>Light Mode</span>';
+            } else {
+                document.body.classList.remove('dark-mode');
+                themeToggle.innerHTML = '<i class="fas fa-moon"></i><span>Dark Mode</span>';
+            }
+        }
+
+        themeToggle.addEventListener('click', () => {
+            darkMode = !darkMode;
+            localStorage.setItem('darkMode', darkMode);
+            applyTheme();
+        });
+
+        // Intro Animation
+        function playIntroAnimation() {
+            const introOverlay = document.getElementById('introOverlay');
+            const notebookPage1 = document.getElementById('notebookPage1');
+            const notebookPage2 = document.getElementById('notebookPage2');
+            const finalLogo = document.getElementById('finalLogo');
+
+            // Initial delay
+            setTimeout(() => {
+                // First page flip
+                notebookPage1.style.transform = 'rotateY(-180deg)';
+                
+                // Second page flip after delay
+                setTimeout(() => {
+                    notebookPage2.style.transform = 'rotateY(-180deg)';
+                    
+                    // Show final logo after pages have flipped
+                    setTimeout(() => {
+                        notebookPage1.style.opacity = '0';
+                        notebookPage2.style.opacity = '0';
+                        finalLogo.style.opacity = '1';
+                        finalLogo.style.transform = 'scale(1)';
+                        
+                        // Fade out everything
+                        setTimeout(() => {
+                            introOverlay.style.opacity = '0';
+                            
+                            // Remove from DOM after animation completes
+                            setTimeout(() => {
+                                introOverlay.style.display = 'none';
+                            }, 1000);
+                        }, 1500);
+                    }, 1000);
+                }, 1000);
+            }, 500);
+        }
+
+        // Play intro animation when page loads
+        window.addEventListener('load', playIntroAnimation);
+
+        // Navigation between pages
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const page = link.getAttribute('data-page');
+                
+                // Hide all pages
+                document.querySelectorAll('.page').forEach(p => {
+                    p.style.display = 'none';
+                });
+                
+                // Show selected page
+                document.getElementById(`${page}-page`).style.display = 'block';
+                
+                // Update active nav link
+                document.querySelectorAll('.nav-link').forEach(l => {
+                    l.style.color = 'white';
+                });
+                link.style.color = 'var(--accent)';
+                
+                // Scroll to top
+                window.scrollTo(0, 0);
+            });
+        });
+
+        // Set home as default page
+        document.querySelector('.nav-link[data-page="home"]').click();
+
+        // Tab functionality
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const tabId = btn.getAttribute('data-tab');
+                
+                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                
+                btn.classList.add('active');
+                document.getElementById(tabId).classList.add('active');
+            });
+        });
+
+        // Audio recording
+        let mediaRecorder;
+        let audioChunks = [];
+        let recordingStartTime;
+        
+        document.getElementById('startRecord').addEventListener('click', async () => {
+            try {
+                showStatus('Recording started...', 'success');
+                document.getElementById('recordIcon').innerHTML = '<i class="fas fa-circle" style="color: red;"></i>';
+                document.getElementById('startRecord').classList.add('pulse');
+                document.getElementById('startRecord').disabled = true;
+                
+                const stream = await navigator.mediaDevices.getUserMedia({ 
+                    audio: {
+                        sampleRate: 16000,
+                        channelCount: 1,
+                        echoCancellation: true,
+                        noiseSuppression: true
+                    } 
+                });
+                
+                mediaRecorder = new MediaRecorder(stream, {
+                    mimeType: 'audio/wav',
+                    audioBitsPerSecond: 128000
+                });
+                
+                audioChunks = [];
+                recordingStartTime = Date.now();
+                
+                mediaRecorder.ondataavailable = event => {
+                    audioChunks.push(event.data);
+                };
+                
+                mediaRecorder.onstop = async () => {
+                    try {
+                        showProcessingState();
+                        const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
+                        await processAudio(audioBlob);
+                        const duration = Math.floor((Date.now() - recordingStartTime) / 1000);
+                        showStatus(`Processed ${duration}s recording successfully!`, 'success');
+                    } catch (err) {
+                        showError(err.message);
+                    } finally {
+                        document.getElementById('recordIcon').innerHTML = '<i class="fas fa-microphone"></i>';
+                        document.getElementById('startRecord').classList.remove('pulse');
+                        document.getElementById('startRecord').disabled = false;
+                        stream.getTracks().forEach(track => track.stop());
+                    }
+                };
+                
+                mediaRecorder.start();
+                document.getElementById('stopRecord').disabled = false;
+                
+            } catch (err) {
+                showError('Microphone access denied. Please allow microphone permissions.');
+                document.getElementById('recordIcon').innerHTML = '<i class="fas fa-microphone"></i>';
+                document.getElementById('startRecord').classList.remove('pulse');
+                document.getElementById('startRecord').disabled = false;
+            }
+        });
+        
+        document.getElementById('stopRecord').addEventListener('click', () => {
+            if (mediaRecorder && mediaRecorder.state === 'recording') {
+                mediaRecorder.stop();
+                document.getElementById('stopRecord').disabled = true;
+            }
+        });
+        
+        // File upload
+        document.getElementById('uploadFile').addEventListener('click', () => {
+            document.getElementById('audioUpload').click();
+        });
+        
+        document.getElementById('audioUpload').addEventListener('change', async (e) => {
+            if (e.target.files.length > 0) {
+                try {
+                    showProcessingState();
+                    await processAudio(e.target.files[0]);
+                    showStatus('File processed successfully!', 'success');
+                } catch (err) {
+                    showError(err.message);
+                }
+            }
+        });
+        
+        // Copy buttons
+        document.getElementById('copyOriginal').addEventListener('click', () => {
+            copyToClipboard('originalText');
+        });
+        
+        document.getElementById('copyTranslation').addEventListener('click', () => {
+            copyToClipboard('translationText');
+        });
+        
+        document.getElementById('copyNotes').addEventListener('click', () => {
+            copyToClipboard('shortNotes');
+        });
+        
+        // Download buttons
+        document.getElementById('downloadOriginal').addEventListener('click', () => {
+            downloadText('originalText', 'original-text.txt');
+        });
+        
+        document.getElementById('downloadTranslation').addEventListener('click', () => {
+            downloadText('translationText', 'translation.txt');
+        });
+        
+        document.getElementById('downloadNotes').addEventListener('click', () => {
+            downloadText('shortNotes', 'study-notes.txt');
+        });
+        
+        // Voice notes functionality
+        document.getElementById('playNotesVoice').addEventListener('click', playNotesInVoice);
+        
+        // Contact form submission
+        document.getElementById('sendMessage').addEventListener('click', () => {
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('email').value;
+            const subject = document.getElementById('subject').value;
+            const message = document.getElementById('message').value;
+            
+            if (!name || !email || !message) {
+                showError('Please fill in all required fields');
+                return;
+            }
+            
+            // In a real app, you would send this data to your server
+            document.getElementById('contactSuccess').style.display = 'block';
+            document.getElementById('name').value = '';
+            document.getElementById('email').value = '';
+            document.getElementById('subject').value = '';
+            document.getElementById('message').value = '';
+            
+            // Scroll to show success message
+            document.getElementById('contactSuccess').scrollIntoView({ behavior: 'smooth' });
+        });
+        
+        // Donation functionality
+        let selectedDonationAmount = 0;
+        document.querySelectorAll('.donation-option').forEach(option => {
+            option.addEventListener('click', () => {
+                document.querySelectorAll('.donation-option').forEach(opt => {
+                    opt.classList.remove('selected');
+                });
+                option.classList.add('selected');
+                selectedDonationAmount = parseInt(option.getAttribute('data-amount'));
+            });
+        });
+        
+        document.getElementById('donateButton').addEventListener('click', () => {
+            if (selectedDonationAmount > 0) {
+                // In a real app, this would redirect to a payment processor
+                showStatus(`Thank you for your donation of $${selectedDonationAmount}!`, 'success');
+                document.querySelectorAll('.donation-option').forEach(opt => {
+                    opt.classList.remove('selected');
+                });
+                selectedDonationAmount = 0;
+            } else {
+                showError('Please select a donation amount');
+            }
+        });
+        
+        // Feedback functionality
+        let selectedRating = 0;
+        document.querySelectorAll('.rating-stars i').forEach(star => {
+            star.addEventListener('click', () => {
+                const rating = parseInt(star.getAttribute('data-rating'));
+                selectedRating = rating;
+                
+                document.querySelectorAll('.rating-stars i').forEach(s => {
+                    s.classList.remove('active');
+                    if (parseInt(s.getAttribute('data-rating')) <= rating) {
+                        s.classList.add('active');
+                    }
+                });
+            });
+        });
+        
+        document.getElementById('feedbackFab').addEventListener('click', () => {
+            document.getElementById('feedbackModal').style.display = 'flex';
+        });
+        
+        document.getElementById('closeFeedback').addEventListener('click', () => {
+            document.getElementById('feedbackModal').style.display = 'none';
+        });
+        
+        document.getElementById('submitFeedback').addEventListener('click', () => {
+            const feedbackText = document.getElementById('feedbackText').value;
+            
+            if (selectedRating === 0) {
+                showError('Please select a rating');
+                return;
+            }
+            
+            // In a real app, you would send this feedback to your server
+            showStatus(`Thank you for your ${selectedRating}-star feedback!`, 'success');
+            document.getElementById('feedbackModal').style.display = 'none';
+            document.getElementById('feedbackText').value = '';
+            document.querySelectorAll('.rating-stars i').forEach(s => {
+                s.classList.remove('active');
+            });
+            selectedRating = 0;
+        });
+        
+        // Floating action button
+        document.getElementById('mainFab').addEventListener('click', () => {
+            document.querySelector('.nav-link[data-page="home"]').click();
+            document.getElementById('startRecord').click();
+        });
+
+        // Helper functions
+        function showProcessingState() {
+            document.getElementById('originalText').innerHTML = '<span class="loader"></span> Processing audio...';
+            document.getElementById('translationText').innerHTML = '<span class="loader"></span> Translating...';
+            document.getElementById('shortNotes').innerHTML = '<span class="loader"></span> Generating structured notes...';
+            document.getElementById('voiceControls').style.display = 'none';
+        }
+        
+        function showStatus(message, type) {
+            const statusDiv = document.getElementById('statusDisplay');
+            statusDiv.textContent = message;
+            statusDiv.className = '';
+            statusDiv.classList.add(type);
+            setTimeout(() => {
+                statusDiv.classList.remove('success', 'error');
+                statusDiv.textContent = '';
+            }, 5000);
+        }
+        
+        function showError(message) {
+            showStatus(`⚠️ ${message}`, 'error');
+        }
+        
+        async function processAudio(audioBlobOrFile) {
+            const language = document.getElementById('language').value;
+            const formData = new FormData();
+            formData.append('audio', audioBlobOrFile);
+            formData.append('language', language);
+            
+            try {
+                const response = await fetch('/process', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.error || 'Server error');
+                }
+                
+                const data = await response.json();
+                
+                // Update all tabs
+                document.getElementById('originalText').textContent = data.text || 'No text recognized';
+                document.getElementById('translationText').textContent = data.translation || 'No translation available';
+                
+                // Special handling for formatted notes
+                const notesContainer = document.getElementById('shortNotes');
+                if (data.short_notes) {
+                    notesContainer.innerHTML = formatNotes(data.short_notes);
+                    // Show voice controls since we have notes
+                    document.getElementById('voiceControls').style.display = 'block';
+                } else {
+                    notesContainer.textContent = 'Could not generate notes';
+                    document.getElementById('voiceControls').style.display = 'none';
+                }
+                
+            } catch (err) {
+                document.getElementById('voiceControls').style.display = 'none';
+                throw new Error(err.message.includes('WAV format') ? 
+                    'Invalid audio format. Use mono 16-bit WAV files.' : 
+                    err.message);
+            }
+        }
+        
+        function formatNotes(rawNotes) {
+            // Convert plaintext formatting to HTML
+            const formatted = rawNotes
+                // Malayalam headings
+                .replace(/📚 സമഗ്ര പഠന കുറിപ്പുകൾ/g, '<div class="notes-heading"><span class="emoji-icon">📚</span>സമഗ്ര പഠന കുറിപ്പുകൾ</div>')
+                .replace(/🔍 പ്രധാന ആശയങ്ങൾ:/g, '<div class="notes-heading"><span class="emoji-icon">🔍</span>പ്രധാന ആശയങ്ങൾ</div><ul>')
+                .replace(/📖 പിന്തുണയ്ക്കുന്ന വിശദാംശങ്ങൾ:/g, '</ul><div class="notes-heading"><span class="emoji-icon">📖</span>പിന്തുണയ്ക്കുന്ന വിശദാംശങ്ങൾ</div><ul>')
+                .replace(/💡 പ്രധാനപ്പെട്ട കാര്യങ്ങൾ:/g, '</ul><div class="notes-heading"><span class="emoji-icon">💡</span>പ്രധാനപ്പെട്ട കാര്യങ്ങൾ</div><ul>')
+                // Hindi headings
+                .replace(/📚 व्यापक अध्ययन नोट्स/g, '<div class="notes-heading"><span class="emoji-icon">📚</span>व्यापक अध्ययन नोट्स</div>')
+                .replace(/🔍 मुख्य अवधारणाएँ:/g, '<div class="notes-heading"><span class="emoji-icon">🔍</span>मुख्य अवधारणाएँ</div><ul>')
+                .replace(/📖 सहायक विवरण:/g, '</ul><div class="notes-heading"><span class="emoji-icon">📖</span>सहायक विवरण</div><ul>')
+                .replace(/💡 मुख्य बातें:/g, '</ul><div class="notes-heading"><span class="emoji-icon">💡</span>मुख्य बातें</div><ul>')
+                // Kannada headings
+                .replace(/📚 ಸಮಗ್ರ ಅಧ್ಯಯನ ನೋಟ್ಸ್/g, '<div class="notes-heading"><span class="emoji-icon">📚</span>ಸಮಗ್ರ ಅಧ್ಯಯನ ನೋಟ್ಸ್</div>')
+                .replace(/🔍 ಮುಖ್ಯ ಪರಿಕಲ್ಪನೆಗಳು:/g, '<div class="notes-heading"><span class="emoji-icon">🔍</span>ಮುಖ್ಯ ಪರಿಕಲ್ಪನೆಗಳು</div><ul>')
+                .replace(/📖 ಬೆಂಬಲ ವಿವರಗಳು:/g, '</ul><div class="notes-heading"><span class="emoji-icon">📖</span>ಬೆಂಬಲ ವಿವರಗಳು</div><ul>')
+                .replace(/💡 ಪ್ರಮುಖ ತೆಗೆದುಕೊಳ್ಳುವಿಕೆಗಳು:/g, '</ul><div class="notes-heading"><span class="emoji-icon">💡</span>ಪ್ರಮುಖ ತೆಗೆದುಕೊಳ್ಳುವಿಕೆಗಳು</div><ul>')
+                // English headings
+                .replace(/📚 Comprehensive Study Notes/g, '<div class="notes-heading"><span class="emoji-icon">📚</span>Comprehensive Study Notes</div>')
+                .replace(/🔍 Core Concepts:/g, '<div class="notes-heading"><span class="emoji-icon">🔍</span>Core Concepts</div><ul>')
+                .replace(/📖 Supporting Details:/g, '</ul><div class="notes-heading"><span class="emoji-icon">📖</span>Supporting Details</div><ul>')
+                .replace(/💡 Key Takeaways:/g, '</ul><div class="notes-heading"><span class="emoji-icon">💡</span>Key Takeaways</div><ul>')
+                // Bullet points
+                .replace(/\n• (.*?)(\n|$)/g, '<li class="main-point">$1</li>')
+                .replace(/\n- (.*?)(\n|$)/g, '<li class="supporting-point">$1</li>')
+                .replace(/\n→ (.*?)(\n|$)/g, '<li class="takeaway-point">$1</li>')
+                .replace(/\n{2,}/g, '</ul><ul>')
+                .replace(/<ul><\/ul>/g, '')
+                + '</ul>';
+
+            return formatted || '<div class="notes-heading"><span class="emoji-icon">⚠️</span>Notes Formatting Error</div>';
+        }
+        
+        function copyToClipboard(elementId) {
+            const element = document.getElementById(elementId);
+            const text = element.textContent || element.innerText;
+            navigator.clipboard.writeText(text).then(() => {
+                showStatus('Copied to clipboard!', 'success');
+            }).catch(() => {
+                showError('Failed to copy text');
+            });
+        }
+        
+        function downloadText(elementId, filename) {
+            const element = document.getElementById(elementId);
+            const text = element.textContent || element.innerText;
+            const blob = new Blob([text], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            showStatus('Download started!', 'success');
+        }
+        
+        async function generateSpeech(text, language) {
+            try {
+                const response = await fetch('/generate_speech', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        text: text,
+                        language: language
+                    })
+                });
+                
+                if (!response.ok) {
+                    throw new Error('Failed to generate speech');
+                }
+                
+                return await response.json();
+            } catch (err) {
+                console.error('Speech generation error:', err);
+                return null;
+            }
+        }
+        
+        async function playNotesInVoice() {
+            const notesText = document.getElementById('shortNotes').textContent;
+            const language = document.getElementById('language').value;
+            
+            if (!notesText.trim()) {
+                showError('No notes available to play');
+                return;
+            }
+            
+            const playBtn = document.getElementById('playNotesVoice');
+            playBtn.disabled = true;
+            playBtn.innerHTML = '<span class="loader"></span> Generating...';
+            
+            try {
+                const speechData = await generateSpeech(notesText, language);
+                if (speechData && speechData.audio) {
+                    const audioElement = document.getElementById('notesAudio');
+                    audioElement.src = `data:${speechData.mimeType};base64,${speechData.audio}`;
+                    audioElement.style.display = 'block';
+                    audioElement.play();
+                }
+            } catch (err) {
+                showError('Could not generate voice notes');
+            } finally {
+                playBtn.disabled = false;
+                playBtn.innerHTML = '<span><i class="fas fa-play"></i></span> Play Notes';
+            }
+        }
+    </script>
+</body>
+</html>
