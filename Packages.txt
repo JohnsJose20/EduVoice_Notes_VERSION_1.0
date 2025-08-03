@@ -1,0 +1,37 @@
+EduNotes Local Installation Guide for Windows 11
+
+Required Python Packages:
+1. Install Python (3.7 or higher) from python.org
+2. Open Command Prompt and run:
+
+pip install flask
+pip install SpeechRecognition
+pip install deep-translator
+pip install sumy
+pip install gTTS
+pip install wave
+pip install python-dotenv
+pip install pyaudio
+
+Additional Requirements:
+1. FFmpeg - Download from ffmpeg.org and add to PATH
+2. NLTK Data - Run these Python commands after installation:
+   import nltk
+   nltk.download('punkt')
+
+Running the Application:
+1. Create project folder with this structure:
+   /your-project/
+   ├── app.py
+   └── templates/
+       └── index.html
+
+2. Run from command prompt:
+   python app.py
+
+3. Access at: http://localhost:5000
+
+Troubleshooting:
+- PyAudio issues: Install Microsoft Visual C++ Build Tools
+- WAV files: Must be mono 16-bit format
+- Microphone: Ensure permissions are enabled in Windows settings
